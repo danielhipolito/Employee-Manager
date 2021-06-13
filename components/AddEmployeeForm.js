@@ -6,8 +6,13 @@ const AddEmployeeForm = props => {
     const handleEmployee = e => {
         setEmployee({...employee,[e.target.name]:e.target.value});
     };
-    
-    return  <form onSubmit={props.onSubmit}>
+
+    const sendEmployee = e => {
+        e.preventDefault();
+        props.onSubmit(employee)
+    };
+
+    return  <form onSubmit={sendEmployee}>
         <div className="row">
             <div className ="col-lg-12">
                 <div className="form-group">
@@ -30,13 +35,13 @@ const AddEmployeeForm = props => {
                 <select name="area" id="area" onChange={handleEmployee}
                     className="form-control" 
                     defaultValue = {employee.area} >
-                    <option value={"0"} key={"0"}>
+                    <option value={"Finanzas"} key={"0"}>
                         Finanzas
                     </option>
-                    <option value={"1"} key={"1"}>
+                    <option value={"Desarrollo"} key={"1"}>
                         Desarrollo
                     </option>
-                    <option value={"2"} key={"2"}>
+                    <option value={"Capital Humano"} key={"2"}>
                         Capital Humano
                     </option>  
                 </select>
