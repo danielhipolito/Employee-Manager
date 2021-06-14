@@ -6,12 +6,15 @@ import {useState, useEffect} from "react";
 import { faEdit} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Head from 'next/head';
+import {ReactSearchAutocomplete}  from 'react-search-autocomplete';
 
 const Index = () => {
     const [showHandleEmployee, setShowHandleEmployee] = useState(false);
     const [currencyConfig, setCurrencyConfig] = useState({currency:"MXN",languague:"mx-MX"});
     const [employees, setEmployees] = useState([]);
+    const [searchedEmployees, setSearchedEmployees] = useState([]);
     const [employeeToEdit, setEmployeeToEdit] = useState({});
+
 
     let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Imagen","Acciones"];
     let bodyValues = [];
@@ -19,12 +22,12 @@ const Index = () => {
     let numberFormat1 = new Intl.NumberFormat(currencyConfig.languague, options1);
 
     if(!employees || employees.length == 0) {
-        bodyValues.push(<tr>
+        bodyValues.push(<tr key ="dios">
             <td colspan="100"> No hay empleados </td>
         </tr>);
     }
     else {
-        employees.forEach(employee => {  
+        employees.forEach((employee,idx) => {  
             let salary = numberFormat1.format(employee.salary); 
             let salaryColor = "text-success";
             if (employee.salary > 10000)
@@ -33,7 +36,7 @@ const Index = () => {
                 salary =`${(parseFloat(employee.salary)/21.50).toFixed(2)} USD`;
             }
                 
-            bodyValues.push(<tr key = {"s"}>
+            bodyValues.push(<tr key = {idx}>
                 <td className = "text-primary"> {employee.id ?
                     employee.id.substring(0,5)
                 :'N/A'} </td>    
@@ -53,34 +56,41 @@ const Index = () => {
 
     const getEmployees = () => {
         let storedEmployees = JSON.parse(localStorage.getItem("employees"));
+        let employeesAndCompanies = [];
         if(!storedEmployees)
             storedEmployees = [];
+        storedEmployees.forEach(employee => {
+            employeesAndCompanies.push({id:employee.id, name:`${employee.name} - ${employee.company}`});
+        });
         setEmployees(storedEmployees);
+        setSearchedEmployees(employeesAndCompanies)
     };
 
     useEffect(() => {
         getEmployees();
     } , []);
+
     const addEmployee = () => {
         setEmployeeToEdit({});
         setShowHandleEmployee(true);
     };
 
-    const findEmployee = (employees,employeeId) => {
-        let foundEmployeeIdx = null;
-        for(let i = 0; i < employees.length; i++) 
+    const findEmployee = async employeeId => {
+        let foundEmployeeData = null;
+        for(let i = 0; i < employees.length; i++) {
             if (employeeId == employees[i].id) {
-                foundEmployeeIdx = i;
+                foundEmployeeData = [await i, await employees[i]];
                 break;
             }
-        return foundEmployeeIdx;
+        }
+        return foundEmployeeData;
     }; 
 
-    const handleEmployee = employee => {
+    const handleEmployee = async employee => {
         let employeeData = employees;
-        let foundEmployeeIdx = findEmployee(employees,employee.id);
+        let foundEmployeeIdx = await findEmployee(employee.id);
         if(foundEmployeeIdx) {
-            employeeData[foundEmployeeIdx] = employee;
+            employeeData[foundEmployeeIdx[0]] = employee;
             localStorage.setItem("employees", JSON.stringify(employeeData));
         }
         else {
@@ -103,6 +113,21 @@ const Index = () => {
         setShowHandleEmployee(true);
     };
    
+    const handleOnSearch =  async (searched, results) => {
+        let searchedEmployeesList = results;
+        if(searched.length == 1)
+            searchedEmployeesList = searchedEmployees;
+        let employeesInfo = [];
+        for(let i = 0; i < searchedEmployeesList.length; i++) {
+            let employeeSelected = await findEmployee(searchedEmployeesList[i].id);
+            if(employeeSelected) { 
+                employeesInfo.push(employeeSelected[1]);
+            }  
+        } 
+        setEmployees(employeesInfo);
+    };
+   
+
     return <> <Head>
             <link rel="preconnect" href="https://fonts.gstatic.com"/>
             <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" 
@@ -145,8 +170,14 @@ const Index = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-6"/>
-                        <div className = "col-lg-6 text-right">
+                        <div className="col-lg-5 ml-5">
+                            <ReactSearchAutocomplete
+                                required
+                                items={searchedEmployees}
+                                onSearch={handleOnSearch}
+                            />
+                        </div>
+                        <div className = "col-lg-6 text-right ml-2">
                             <button className ="btn btn-employees-manager-app mr-3 " 
                                 onClick = {addEmployee}>
                                 + Agregar Empleado
@@ -185,7 +216,10 @@ const Index = () => {
               }
               .salary {
                 font-family: inconsolata !important;
-              }              
+              }  
+              .sc-bwzfXH {
+                display: none !important;
+              }            
         `} </style>
     </>
 };
