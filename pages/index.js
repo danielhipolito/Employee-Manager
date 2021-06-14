@@ -79,7 +79,10 @@ const Index = () => {
                 <div className = "row">
                     <div className ="col-lg-12">
                         <div className = "row d-flex align-items-center">
-                            <div className ="col-lg-4"/>
+                            <div className ="col-lg-4 text-center">
+                                <b className ="text-secondary">Total de empleados</b>
+                                <p className="text-danger"> {employees.length} </p>
+                            </div>
                             <div className ="col-lg-4 text-center">
                                 <b className ="text-secondary">Divisa de salario</b>
                                 <p className="text-danger"> {`${currencyConfig.currency}`} </p>
