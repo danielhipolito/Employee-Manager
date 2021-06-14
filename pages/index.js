@@ -16,11 +16,17 @@ const Index = () => {
     const [searchedEmployees, setSearchedEmployees] = useState([]);
     const [employeeToEdit, setEmployeeToEdit] = useState({});
     const [showCaptureEmployee, setShowCaptureEmployee] = useState(false);
+    // const [showCaptureEmployee, setShowCaptureEmployee] = useState(false);
 
     let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Foto","Acciones"];
     let bodyValues = [];
     let options1 = { style: 'currency', currency: currencyConfig.currency };
     let numberFormat1 = new Intl.NumberFormat(currencyConfig.languague, options1);
+
+    const setUpVideoCamera = employee => {
+        setEmployeeToEdit(employee);
+        setShowCaptureEmployee(true);
+    };
 
     if(!employees || employees.length == 0) {
         bodyValues.push(<tr key ="dios">
@@ -48,9 +54,12 @@ const Index = () => {
                     {salary}
                 </td>
                 <td> 
-                    <a href = "#" onClick = {() => setShowCaptureEmployee(true)} >
-                        <FontAwesomeIcon icon={faPlus} className={"fa-lg text-info"} /> 
-                    </a>
+                    { !employee.photo 
+                        ?   <a href = "#" onClick = {() => setUpVideoCamera(employee)} >
+                                <FontAwesomeIcon icon={faPlus} className={"fa-lg text-info"} /> 
+                            </a>
+                        :   <img id = {employee.id} src = {`data:image/png;base64${employee.photo}`}
+                                width = {30} height = {30}/>}
                 </td>
                 <td> <a href = "#" onClick = {() => editEmployee(employee)}>
                         <FontAwesomeIcon icon={faEdit} className={"fa-lg text-info"} /> 
@@ -132,6 +141,13 @@ const Index = () => {
         } 
         setEmployees(employeesInfo);
     };
+    const addEmployeePhoto = async (photo,employee) => {
+        let employeeData = employees;
+        let foundEmployeeIdx = await findEmployee(employee.id);
+        employeeData[foundEmployeeIdx[0]] = {...employee,["photo"]:photo};
+        localStorage.setItem("employees", JSON.stringify(employeeData));
+        getEmployees();
+    };
    
 
     return <> <Head>
@@ -146,7 +162,7 @@ const Index = () => {
             </BasicModal>  
             <BasicModal show ={showCaptureEmployee} onClose ={()=>setShowCaptureEmployee(false)} 
                 title = "Registrar foto"  type="form" size ="md">
-                <VideoCamera/>
+                <VideoCamera onPhotoCapture = {addEmployeePhoto} employee = {employeeToEdit}/>
             </BasicModal>  
             <h1 className="h4 font-weight-bold pt-5 mb-4 text-gray-800"> Administrador de empleados </h1>
             <div className ="row d-flex justify-content-center">
@@ -180,14 +196,14 @@ const Index = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-5 ml-5">
+                        <div className="col-md-5 ml-5 mr-md-0 mr-5">
                             <ReactSearchAutocomplete
                                 required
                                 items={searchedEmployees}
                                 onSearch={handleOnSearch}
                             />
                         </div>
-                        <div className = "col-lg-6 text-right ml-2">
+                        <div className = "col-md-6 text-md-right text-center ml-2 mb-1 mt-md-0 mt-2">
                             <button className ="btn btn-employees-manager-app mr-3 " 
                                 onClick = {addEmployee}>
                                 + Agregar Empleado

@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import RecordRTC,{MediaStreamRecorder} from 'recordrtc';
 
-const VideoCamera = () => {
+const VideoCamera = props => {
     const [video,setVideo] = useState({});
     const [capturedPhoto,setCapturedPhoto] = useState("");
     const [hasCapturedPhoto,setHasCapturedPhoto] = useState(false);
@@ -32,6 +32,18 @@ const VideoCamera = () => {
             video.play();          
         }
     } , [video]);
+    function getBase64Image(img) {
+        var canvass = document.createElement("canvass");
+        // canvass.width = img.width;
+        // canvass.height = img.height;
+    
+        var ctx = canvass.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+    
+        var dataURL = canvass.toDataURL("image/png");
+    
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
    
     const takePhoto = video => {
         let canvas = document.createElement('canvas');
@@ -44,6 +56,10 @@ const VideoCamera = () => {
         image.src = canvas.toDataURL("image/png");
         setCapturedPhoto(image.src);
         setHasCapturedPhoto(true);
+        let employeePhoto = document.getElementById('captured-img');
+        // imgData = getBase64Image(employeePhoto);
+        props.onPhotoCapture (canvas.toDataURL("image/png"),props.employee );
+        // localStorage.setItem("imgData", imgData);
     };
 
     const getPhoto = () => {
@@ -81,7 +97,7 @@ const VideoCamera = () => {
                     <p>Foto capturada correctamente. Ya puedes cerrar esta ventana.</p>
                 </div>
                 <div className = "col-lg-10">
-                    <img src={capturedPhoto} width="100%" height ="100%"/>
+                    <img src={capturedPhoto} width="100%" height ="100%" id ="captured-img"/>
                 </div>
             </>}
     </div>
