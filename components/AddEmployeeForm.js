@@ -3,14 +3,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 const AddEmployeeForm = props => {
     const [employee, setEmployee] = useState(props.default?props.default:{});
-
+    let employeeDefaultName = props.default.name;
     const handleEmployee = e => {
         setEmployee({...employee,[e.target.name]:e.target.value});
     };
 
     const sendEmployee = e => {
         let employeeData = employee;
-        employee.id = uuidv4();
+        if(!employeeData.area) {
+            employeeData.area = "Finanzas";
+        }
+        if(!employeeDefaultName)
+            employee.id = uuidv4();
         e.preventDefault();
         props.onSubmit(employeeData);
         setEmployee({});
@@ -31,7 +35,7 @@ const AddEmployeeForm = props => {
                     <label htmlFor="company">Empresa:</label>
                     <input className="form-control"type="text" onChange={handleEmployee} 
                         required name="company"  id="company" value={employee.company} maxlength="40"
-                        minLength="2"/>
+                        minLength="2" disabled = {employeeDefaultName?true:false}/>
                 </div>   
             </div>
             <div className ="col-lg-6">
@@ -60,7 +64,7 @@ const AddEmployeeForm = props => {
             </div>
         </div>
         <button className="btn btn-primary btn-block" type="submit">
-            {props.default?'Actualizar':'Agregar'}
+            {employeeDefaultName?'Actualizar':'Agregar'}
         </button>
     </form>
 };

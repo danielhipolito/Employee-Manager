@@ -5,11 +5,13 @@ import BasicModal from "../components/BasicModal";
 import {useState, useEffect} from "react";
 import { faEdit} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { AddEmployee } from "../stories/AddEmployeeForm.stories";
 
 const Index = () => {
-    const [showAddEmployee, setShowAddEmployee] = useState(false);
+    const [showHandleEmployee, setShowHandleEmployee] = useState(false);
     const [currencyConfig, setCurrencyConfig] = useState({currency:"MXN",languague:"mx-MX"});
     const [employees, setEmployees] = useState([]);
+    const [employeeToEdit, setEmployeeToEdit] = useState({});
 
     let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Imagen","Acciones"];
     let bodyValues = [];
@@ -38,7 +40,7 @@ const Index = () => {
                 <td> {employee.area} </td>
                 <td> {salary}</td>
                 <td> </td>
-                <td> <a href = "#">
+                <td> <a href = "#" onClick = {() => editEmployee(employee)}>
                     <FontAwesomeIcon icon={faEdit} className={"fa-lg text-primary"} /> 
                     </a></td>
             </tr>);   
@@ -47,17 +49,42 @@ const Index = () => {
 
     const getEmployees = () => {
         let storedEmployees = JSON.parse(localStorage.getItem("employees"));
+        if(!storedEmployees)
+            storedEmployees = [];
         setEmployees(storedEmployees);
     };
 
     useEffect(() => {
         getEmployees();
     } , []);
+    const addEmployee = () => {
+        setEmployeeToEdit({});
+        setShowHandleEmployee(true);
+    };
 
-    const addEmployee = employee => {
-        localStorage.setItem("employees", JSON.stringify([...employees,employee]));
+    const findEmployee = (employees,employeeId) => {
+        let foundEmployeeIdx = null;
+        for(let i = 0; i < employees.length; i++) 
+            if (employeeId == employees[i].id) {
+                foundEmployeeIdx = i;
+                break;
+            }
+        return foundEmployeeIdx;
+    }; 
+
+    const handleEmployee = employee => {
+        let employeeData = employees;
+        let foundEmployeeIdx = findEmployee(employees,employee.id);
+        if(foundEmployeeIdx) {
+            employeeData[foundEmployeeIdx] = employee;
+            localStorage.setItem("employees", JSON.stringify(employeeData));
+        }
+        else {
+            localStorage.setItem("employees", JSON.stringify([...employees,employee]));
+        }
         getEmployees();
-        setShowAddEmployee(false);
+        setShowHandleEmployee(false);
+        
     };
 
     const toUsdCurrency = () => {
@@ -66,11 +93,16 @@ const Index = () => {
     const toMxnCurrency = () => {
         setCurrencyConfig({currency:'MXN', languague:'mx-MX'});
     };
+
+    const editEmployee = employee => {
+        setEmployeeToEdit(employee);
+        setShowHandleEmployee(true);
+    };
    
     return <Layout>
-        <BasicModal show ={showAddEmployee} onClose ={()=>setShowAddEmployee(false)} 
+        <BasicModal show ={showHandleEmployee} onClose ={()=>setShowHandleEmployee(false)} 
             title = "Agregar Empleado"  type="form">
-            <AddEmployeeForm onSubmit = {addEmployee}/>
+            <AddEmployeeForm onSubmit = {handleEmployee} default = {employeeToEdit}/>
             {/* <AddEmployeeForm default={{name:"Daniel",company:"indava",salary:33,area:2}}/> */}
         </BasicModal>  
         <h1 className="h4 font-weight-bold pt-5 mb-4 text-gray-800"> Administrador de empleados </h1>
@@ -81,7 +113,8 @@ const Index = () => {
                         <div className = "row d-flex align-items-center">
                             <div className ="col-lg-4 text-center">
                                 <b className ="text-secondary">Total de empleados</b>
-                                <p className="text-danger"> {employees.length} </p>
+                                <p className="text-danger"> {employees ?employees.length
+                                    :''} </p>
                             </div>
                             <div className ="col-lg-4 text-center">
                                 <b className ="text-secondary">Divisa de salario</b>
@@ -106,7 +139,7 @@ const Index = () => {
                     </div>
                     <div className="col-lg-6"/>
                     <div className = "col-lg-6 text-right">
-                        <button className ="btn btn-primary mr-3" onClick = {()=>setShowAddEmployee(true)}>
+                        <button className ="btn btn-primary mr-3" onClick = {addEmployee}>
                             + Agregar Empleado
                         </button>
                     </div>
