@@ -1,4 +1,5 @@
 import {useState} from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const AddEmployeeForm = props => {
     const [employee, setEmployee] = useState(props.default?props.default:{});
@@ -8,8 +9,11 @@ const AddEmployeeForm = props => {
     };
 
     const sendEmployee = e => {
+        let employeeData = employee;
+        employee.id = uuidv4();
         e.preventDefault();
-        props.onSubmit(employee)
+        props.onSubmit(employeeData);
+        setEmployee({});
     };
 
     return  <form onSubmit={sendEmployee}>
@@ -50,7 +54,7 @@ const AddEmployeeForm = props => {
                 <div className="form-group">
                     <label htmlFor="salary">Salario:</label>
                     <input name ="salary" type="number" min="100" max="100000" className = "form-control"
-                        id ="salary" value = {employee.salary} onChange = {handleEmployee}
+                        id ="salary" value = {employee.salary} onChange = {handleEmployee} step={"any"}
                         required/>
                 </div>
             </div>

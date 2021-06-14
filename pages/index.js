@@ -3,6 +3,8 @@ import ResponsiveTable from "../components/ResponsiveTable";
 import AddEmployeeForm from "../components/AddEmployeeForm";
 import BasicModal from "../components/BasicModal";
 import {useState, useEffect} from "react";
+import { faEdit} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const Index = () => {
     const [showAddEmployee, setShowAddEmployee] = useState(false);
@@ -10,8 +12,8 @@ const Index = () => {
 
     let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Imagen","Acciones"];
     let bodyValues = [];
-    
-    if(employees.length == 0) {
+
+    if(!employees || employees.length == 0) {
         bodyValues.push(<tr>
             <td colspan="100"> No hay empleados </td>
         </tr>);
@@ -19,11 +21,17 @@ const Index = () => {
     else {
         employees.forEach(employee => {   
             bodyValues.push(<tr key = {"s"}>
-                <td></td>    
+                <td className = "text-primary"> {employee.id ?
+                    employee.id.substring(0,5)
+                :'N/A'} </td>    
                 <td> {employee.name} </td>
                 <td> {employee.company} </td>
                 <td> {employee.area} </td>
                 <td> {employee.salary} </td>
+                <td> </td>
+                <td> <a href = "#">
+                    <FontAwesomeIcon icon={faEdit} className={"fa-lg text-primary"} /> 
+                    </a></td>
             </tr>);   
         }); 
     }
@@ -31,20 +39,22 @@ const Index = () => {
     const getEmployees = () => {
         let storedEmployees = JSON.parse(localStorage.getItem("employees"));
         setEmployees(storedEmployees);
-        console.error(storedEmployees,"dios");
     };
 
     useEffect(() => {
         getEmployees();
     } , []);
 
-
+    const addEmployee = employee => {
+        localStorage.setItem("employees", JSON.stringify([...employees,employee]));
+        getEmployees();
+        setShowAddEmployee(false);
+    };
    
-
     return <Layout>
         <BasicModal show ={showAddEmployee} onClose ={()=>setShowAddEmployee(false)} 
             title = "Agregar Empleado"  type="form">
-            <AddEmployeeForm onSubmit = {getEmployees}/>
+            <AddEmployeeForm onSubmit = {addEmployee}/>
             {/* <AddEmployeeForm default={{name:"Daniel",company:"indava",salary:33,area:2}}/> */}
         </BasicModal>  
         <h1 className="h4 font-weight-bold pt-5 mb-4 text-gray-800"> Administrador de empleados </h1>
