@@ -157,7 +157,7 @@ const Index = () => {
         </Head>
         <Layout>
             <BasicModal show ={showHandleEmployee} onClose ={()=>setShowHandleEmployee(false)} 
-                title = "Agregar Empleado"  type="form">
+                title = {`${employeeToEdit?"Editar":"Agregar"} Empleado`} type="form">
                 <AddEmployeeForm onSubmit = {handleEmployee} default = {employeeToEdit}/>
             </BasicModal>  
             <BasicModal show ={showCaptureEmployee} onClose ={()=>setShowCaptureEmployee(false)} 

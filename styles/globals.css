@@ -24,4 +24,7 @@ a {
   background-color: green !important;
   color:#FFF !important;
 }
+.modal {
+  display: block !important;
+}
 

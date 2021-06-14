@@ -1,22 +1,35 @@
-import Modal from "react-bootstrap/Modal";
-
-const BasicModal = props => {    
-    return <Modal show = {props.show} onHide = {props.onClose} size={props.size}>
-    <Modal.Header closeButton>
-      <Modal.Title>{props.title}</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-    { !props.message ? props.children : props.message}
-    </Modal.Body>
-    {props.type!="form"?<Modal.Footer>
-      <button className="btn btn-secondary" onClick={props.onClose}>
-          {props.cancelTxt}
-      </button>
-      {props.type!="alert"?<button className="btn btn-primary" onClick={props.confirm}>
-          {props.confirmTxt}
-      </button>:''}
-    </Modal.Footer>:''}
-  </Modal>
+const BasicModal = props => {  
+    return props.show? <div className="modal border border-danger" tabindex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">{props.title}</h5>
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"
+                        onClick={props.onClose}>
+                          <span aria-hidden="true" >
+                              &times;
+                          </span>
+                    </button>
+                </div>
+                <div className="modal-body">
+                    <p>  { !props.message ? props.children : props.message} </p>
+                </div>
+                {props.type!="form" 
+                    ? <div className="modal-footer">
+                          {props.type!="alert"
+                            ? <button onClick={props.confirm} classNameName="btn btn-primary">
+                                  {props.confirmTxt}
+                              </button>
+                            :''}
+                          <button onClick={props.onClose} classNameName="btn btn-secondary" 
+                              data-dismiss="modal">
+                              {props.cancelTxt}
+                          </button>
+                      </div>
+                    :''}
+            </div>
+        </div>
+    </div>  : ''
 };
 
 BasicModal.defaultProps = {
