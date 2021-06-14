@@ -111,17 +111,17 @@ const Index = () => {
                 <div className = "row">
                     <div className ="col-lg-12">
                         <div className = "row d-flex align-items-center">
-                            <div className ="col-lg-4 text-center">
+                            <div className ="col-md-4 text-center">
                                 <b className ="text-secondary">Total de empleados</b>
                                 <p className="text-danger"> {employees ?employees.length
                                     :''} </p>
                             </div>
-                            <div className ="col-lg-4 text-center">
+                            <div className ="col-md-4 text-center">
                                 <b className ="text-secondary">Divisa de salario</b>
                                 <p className="text-danger"> {`${currencyConfig.currency}`} </p>
                             </div>
-                            <div className ="col-lg-4 text-right mb-3">
-                                <b className ="mr-5 text-secondary">Seleccionar</b>
+                            <div className ="col-md-4 text-md-right text-center mb-3">
+                                <b className ="mr-md-5 text-secondary">Seleccionar</b>
                                 <div className ="mt-1 mr-4">
                                     <button onClick = {toUsdCurrency} 
                                         className ={`mr-2 btn ${currencyConfig.currency == "USD" 
