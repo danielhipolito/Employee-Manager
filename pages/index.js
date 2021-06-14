@@ -1,9 +1,10 @@
 import Layout from "../components/Layout";
 import ResponsiveTable from "../components/ResponsiveTable";
 import AddEmployeeForm from "../components/AddEmployeeForm";
+import VideoCamera from "../components/VideoCamera";
 import BasicModal from "../components/BasicModal";
 import {useState, useEffect} from "react";
-import { faEdit} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Head from 'next/head';
 import {ReactSearchAutocomplete}  from 'react-search-autocomplete';
@@ -14,9 +15,9 @@ const Index = () => {
     const [employees, setEmployees] = useState([]);
     const [searchedEmployees, setSearchedEmployees] = useState([]);
     const [employeeToEdit, setEmployeeToEdit] = useState({});
+    const [showCaptureEmployee, setShowCaptureEmployee] = useState(false);
 
-
-    let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Imagen","Acciones"];
+    let headValues = ["Empleado","Nombre","Empresa","Área","Salario Mensual","Foto","Acciones"];
     let bodyValues = [];
     let options1 = { style: 'currency', currency: currencyConfig.currency };
     let numberFormat1 = new Intl.NumberFormat(currencyConfig.languague, options1);
@@ -36,7 +37,7 @@ const Index = () => {
                 salary =`${(parseFloat(employee.salary)/21.50).toFixed(2)} USD`;
             }
                 
-            bodyValues.push(<tr key = {idx}>
+            bodyValues.push(<tr key = {idx} >
                 <td className = "text-primary"> {employee.id ?
                     employee.id.substring(0,5)
                 :'N/A'} </td>    
@@ -46,10 +47,15 @@ const Index = () => {
                 <td className = {`${salaryColor} text-right salary`}> 
                     {salary}
                 </td>
-                <td> </td>
+                <td> 
+                    <a href = "#" onClick = {() => setShowCaptureEmployee(true)} >
+                        <FontAwesomeIcon icon={faPlus} className={"fa-lg text-info"} /> 
+                    </a>
+                </td>
                 <td> <a href = "#" onClick = {() => editEmployee(employee)}>
-                    <FontAwesomeIcon icon={faEdit} className={"fa-lg text-info"} /> 
-                    </a></td>
+                        <FontAwesomeIcon icon={faEdit} className={"fa-lg text-info"} /> 
+                    </a>
+                </td>
             </tr>);   
         }); 
     }
@@ -138,6 +144,10 @@ const Index = () => {
                 title = "Agregar Empleado"  type="form">
                 <AddEmployeeForm onSubmit = {handleEmployee} default = {employeeToEdit}/>
             </BasicModal>  
+            <BasicModal show ={showCaptureEmployee} onClose ={()=>setShowCaptureEmployee(false)} 
+                title = "Registrar foto"  type="form" size ="md">
+                <VideoCamera/>
+            </BasicModal>  
             <h1 className="h4 font-weight-bold pt-5 mb-4 text-gray-800"> Administrador de empleados </h1>
             <div className ="row d-flex justify-content-center">
                 <div className = "col-lg-10">
@@ -205,14 +215,6 @@ const Index = () => {
               .employees__table tr:hover{
                 background-color: rgba(255, 255, 0, 0.438);
                 color: black !important;
-              }
-              .btn-employees-manager-app {
-                border:1px solid green !important;
-              }
-              .btn-employees-manager-app:hover {
-                transition: 1.1s;
-                background-color: green !important;
-                color:#FFF !important;
               }
               .salary {
                 font-family: inconsolata !important;

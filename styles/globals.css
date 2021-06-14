@@ -16,4 +16,12 @@ a {
   box-sizing: border-box;
 }
 
+.btn-employees-manager-app {
+  border:1px solid green !important;
+}
+.btn-employees-manager-app:hover {
+  transition: 1.1s;
+  background-color: green !important;
+  color:#FFF !important;
+}
 
